@@ -1,0 +1,156 @@
+---
+title: "Heading for Trouble? Concussions in College Soccer"
+subtitle: "What 391 NCAA Concussions Reveal About Injury Causes and Recovery Timelines"
+author: "Romy Bos"
+date: today
+format:
+  html:
+    theme: flatly
+    toc: true
+    toc-title: "On this page"
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+## The Campus Game: What's Really Causing Concussions?
+
+Soccer is one of the most popular sports on college campuses, but head injuries remain a serious hazard. When people imagine a sport-related concussion (SRC), they usually picture two players crashing together mid-air or someone violently striking the turf. 
+
+A comprehensive study from the **NCAA-DoD CARE Consortium** (*Jo et al., 2024*, published in *The American Journal of Sports Medicine*) analyzed **391 soccer concussions** across collegiate programs to uncover how players actually get hurt—and how long it takes them to get back on the pitch.
+
+::: {.callout-important appearance="simple"}
+### Surprising Finding
+Heading the ball isn't just routine soccer play—it is the **#1 single cause** of collegiate soccer concussions, accounting for nearly one in three injuries overall and **over 51%** of concussions sustained during team practice.
+:::
+
+## Part 1: How Do Concussions Happen?
+
+The study classified every concussion into four main injury mechanisms:
+
+1. **Head-to-Ball:** Direct contact with the ball (e.g., contested headers, high-speed deflections, or close-range shots).
+2. **Head-to-Body:** Striking another player's shoulder, elbow, or torso during a challenge.
+3. **Head-to-Head:** Direct skull-to-skull collisions with an opponent or teammate.
+4. **Head-to-Ground / Equipment:** Hitting the turf, goalposts, or boundary barriers.
+
+*Hover over any bar in the interactive chart below to see exact numbers:*
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(scales)
+
+mechanism_data <- tibble(
+  mechanism = c(
+    "Head-to-Ball",
+    "Head-to-Body",
+    "Head-to-Head",
+    "Head-to-Ground / Equipment"
+  ),
+  count = c(128, 109, 85, 69),
+  percentage = c(32.7, 27.9, 21.7, 17.6)
+)
+
+p1 <- mechanism_data |>
+  ggplot(aes(
+    x = percentage,
+    y = fct_reorder(mechanism, percentage),
+    text = paste0(
+      "<b>", mechanism, "</b><br>",
+      "Share of Total: ", percentage, "%<br>",
+      "Concussions: ", count, " of 391"
+    )
+  )) +
+  geom_col(aes(fill = percentage), show.legend = FALSE, width = 0.6) +
+  scale_fill_gradient(low = "#5dade2", high = "#1b4f72") +
+  scale_x_continuous(labels = scales::percent_format(scale = 1), limits = c(0, 40)) +
+  labs(
+    title = "Concussion Breakdown by Contact Mechanism",
+    x = "Share of Total Concussions (%)",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14, margin = margin(b = 6)),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank()
+  )
+
+ggplotly(p1, tooltip = "text") |>
+  config(displayModeBar = FALSE)
+```
+
+## Part 2: The Road to Recovery — How Long Are Athletes Sidelined?
+
+How long does it take for a student-athlete to be fully cleared for **unrestricted return-to-play (URTP)**?
+
+Athletes don't simply jump back into games right after feeling better. They must complete a supervised graduated return-to-play protocol, progressing from light aerobic exercise to sport-specific drills, non-contact practice, full practice, and finally game clearance.
+
+Across all 391 cases, the average recovery time was **16.6 days**. However, recovery varied significantly depending on how the player was concussed:
+
+*Hover over each bar below to compare average and median days out:*
+
+```{r}
+recovery_data <- tibble(
+  mechanism = c(
+    "Head-to-Ball",
+    "Head-to-Head",
+    "Head-to-Body",
+    "Head-to-Ground / Equipment"
+  ),
+  mean_days = c(18.6, 16.9, 15.7, 14.0),
+  median_days = c(13.9, 11.7, 12.4, 12.1)
+)
+
+p2 <- recovery_data |>
+  ggplot(aes(
+    x = mean_days,
+    y = fct_reorder(mechanism, mean_days),
+    text = paste0(
+      "<b>", mechanism, "</b><br>",
+      "Mean Recovery: ", mean_days, " days<br>",
+      "Median Recovery: ", median_days, " days"
+    )
+  )) +
+  geom_col(aes(fill = mean_days), show.legend = FALSE, width = 0.6) +
+  scale_fill_gradient(low = "#48c774", high = "#e74c3c") +
+  scale_x_continuous(limits = c(0, 24), breaks = seq(0, 24, by = 4)) +
+  labs(
+    title = "Average Days to Full Clearance (Unrestricted Return-to-Play)",
+    x = "Average Days Sidelined",
+    y = NULL
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 14, margin = margin(b = 6)),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank()
+  )
+
+ggplotly(p2, tooltip = "text") |>
+  config(displayModeBar = FALSE)
+```
+
+::: {.callout-note appearance="simple"}
+### Why Did Ball Impacts Lead to Longer Recoveries?
+Athletes who hit the ground or equipment recovered quickest (averaging **14.0 days**), while head-to-ball impacts kept athletes out the longest (averaging **18.6 days**). Researchers note that repetitive headers during training sessions can cause cumulative sub-concussive micro-trauma before a diagnosed concussion occurs, potentially slowing neurocognitive recovery.
+:::
+
+## Part 3: Practice vs. Game Day Reality
+
+The danger profile changes drastically depending on whether athletes are in drills or playing a competitive match:
+
+| Environment | Top Danger | Why It Happens |
+|:---|:---|:---|
+| **Practice** | **Head-to-Ball (51.1%)** | Repetitive heading drills, crosses, and close-quarter scrimmage shots. |
+| **Competition** | **Player Collisions (66.8%)** | Full-throttle aerial challenges and contested loose balls (head-to-body: 36.0%, head-to-head: 30.8%). |
+
+## Takeaways for College Athletes & Coaches
+
+- **Smarter Training:** Limit high-repetition heading drills in training to curb cumulative head impacts.
+- **Fair Play Enforcement:** Strict referee enforcement on reckless challenges in the air can reduce high-speed head-to-head collisions during match play.
+- **Listen to Your Body:** Because ball-impact concussions can take nearly three full weeks to heal, athletes should never rush back through concussion protocol before fully clearing clinical benchmarks.
+
+---
+*Source: Jo, J., Boltz, A. J., Williams, K. L., et al. (2024). Mechanisms of Injury Leading to Concussions in Collegiate Soccer Players: A CARE Consortium Study. The American Journal of Sports Medicine, 52(6), 1585–1595.*
